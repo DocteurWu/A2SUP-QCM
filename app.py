@@ -11,7 +11,7 @@ from flask import (
     jsonify,
     send_from_directory,
 )
-import json, os, random
+import json, os, random, threading
 from datetime import datetime
 import logging
 
@@ -20,6 +20,9 @@ logging.basicConfig(level=logging.INFO)
 app = Flask(__name__)
 app.secret_key = "a2sup_qcm_secret_key_2026"
 app.config["SESSION_COOKIE_SAMESITE"] = "Lax"
+
+# Lock pour la sécurité des accès concurrents au fichier history.json
+history_lock = threading.Lock()
 
 # Chargement de la base de données depuis le fichier JSON
 DB_PATH = os.path.join(os.path.dirname(__file__), "db.json")
@@ -32,16 +35,21 @@ HISTORY_PATH = os.path.join(os.path.dirname(__file__), "history.json")
 
 def load_history():
     """Récupère l'historique depuis le fichier, ou crée un fichier vide"""
-    if os.path.exists(HISTORY_PATH):
-        with open(HISTORY_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
+    with history_lock:
+        if os.path.exists(HISTORY_PATH):
+            try:
+                with open(HISTORY_PATH, "r", encoding="utf-8") as f:
+                    return json.load(f)
+            except (json.JSONDecodeError, IOError):
+                return {}
+        return {}
 
 
 def save_history(history):
     """Sauvegarde l'historique dans le fichier"""
-    with open(HISTORY_PATH, "w", encoding="utf-8") as f:
-        json.dump(history, f, ensure_ascii=False, indent=2)
+    with history_lock:
+        with open(HISTORY_PATH, "w", encoding="utf-8") as f:
+            json.dump(history, f, ensure_ascii=False, indent=2)
 
 
 # Comptes utilisateurs du tutorat
@@ -299,4 +307,11 @@ def api_get_history():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5001, debug=True)
+    # Pour la prod : 'pip install waitress'
+    try:
+        from waitress import serve
+        logging.info("Lancement du serveur avec Waitress (Production)")
+        serve(app, host="0.0.0.0", port=5000)
+    except ImportError:
+        logging.info("Lancement du serveur avec Flask Dev (Développement)")
+        app.run(host="0.0.0.0", port=5000, debug=True)

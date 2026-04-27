@@ -28,6 +28,7 @@ A2PRACTICE est un outil d'entraînement aux QCM développé pour le tutorat A2SU
 ### Prérequis
 - Python 3.8+
 - Flask
+- Waitress (recommandé pour la production)
 
 ### Procédure
 1. Cloner le dépôt :
@@ -37,13 +38,13 @@ A2PRACTICE est un outil d'entraînement aux QCM développé pour le tutorat A2SU
    ```
 2. Installer les dépendances :
    ```bash
-   pip install flask
+   pip install flask waitress
    ```
 3. Lancer le serveur :
    ```bash
    python app.py
    ```
-   Par défaut, l'application est accessible sur le port 5000.
+   L'application détecte automatiquement la présence de Waitress pour basculer en mode production sur le port 5000.
 
 ---
 
