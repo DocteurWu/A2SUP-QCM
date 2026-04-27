@@ -355,6 +355,14 @@
                 width: 100%;
             }
         }
+
+        @media (max-width: 600px) {
+            nav { padding: 0.3rem 0.5rem; }
+            .logo-box img { max-height: 28px; }
+            .btn-nav { font-size: 0.75rem; padding: 0.25rem 0.5rem; gap: 0.2rem; }
+            .nav-right .btn-nav .nav-label { display: none; }
+            .right-col { width: 100%; }
+        }
     </style>
 </head>
 
@@ -368,10 +376,9 @@
         </div>
         <div class="nav-right">
             <a href="https://www.a2sup.fr/" class="btn-nav btn-blue"><i class="bi bi-house-door-fill"></i> a2sup.fr</a>
-            <a href="/dashboard" class="btn-nav btn-red"><i class="bi bi-list-ul"></i> matières</a>
-            <span style="color:#555;font-size:0.85rem;">{{ user_name }}</span>
+            <a href="/dashboard" class="btn-nav btn-red"><i class="bi bi-list-ul"></i> <span class="nav-label">matières</span></a>
             <a href="/logout" class="btn-nav btn-red" style="font-size:0.85rem;padding:0.3rem 0.6rem;"><i
-                    class="bi bi-box-arrow-right"></i> Déconnexion</a>
+                    class="bi bi-box-arrow-right"></i></a>
         </div>
     </nav>
 
