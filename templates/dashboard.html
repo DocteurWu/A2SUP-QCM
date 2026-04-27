@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2SUP QCM - Tableau de bord</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #A60021;
+            --primary-blue: #337ab7;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --border-color: #dddddd;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        /* Navigation */
+        nav {
+            background: #ffffff;
+            border-bottom: 2px solid #e0e0e0;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-box img {
+            max-height: 40px;
+            object-fit: contain;
+        }
+
+        .nav-right {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn-nav {
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-blue {
+            background-color: var(--primary-blue);
+        }
+
+        .btn-red {
+            background-color: var(--primary-red);
+        }
+
+        .btn-dropdown {
+            background-color: #e0e0e0;
+            color: #333;
+            padding: 0.4rem 0.6rem;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-dark {
+            background-color: #343a40;
+            color: #ffffff;
+            text-align: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            padding: 1.5rem 1rem;
+        }
+
+        /* Cards Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .ue-card {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            overflow: hidden;
+            background: white;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            transition: box-shadow 0.2s;
+        }
+
+        .ue-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .ue-card-header {
+            background-color: var(--primary-red);
+            color: white;
+            text-align: center;
+            padding: 2.5rem 1rem;
+        }
+
+        .ue-card-header h3 {
+            font-size: 2rem;
+            font-weight: 400;
+            margin-bottom: 0.5rem;
+        }
+
+        .ue-card-header p {
+            font-size: 1.1rem;
+        }
+
+        .ue-card-stats {
+            padding: 0;
+            list-style: none;
+        }
+
+        .ue-card-stats li {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.8rem 1rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .ue-card-stats li:last-child {
+            border-bottom: none;
+        }
+
+        .ue-card-stats li span:last-child {
+            color: #666;
+            font-weight: 400;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-left">
+            <div class="logo-box">
+                <img src="/logo.jpg" alt="A2SUP">
+            </div>
+        </div>
+        <div class="nav-right">
+            <a href="https://www.a2sup.fr/" class="btn-nav btn-blue"><i class="bi bi-house-door-fill"></i> a2sup.fr</a>
+            <span style="color:#555;font-size:0.85rem;">{{ user_name }}</span>
+            <a href="/logout" class="btn-nav btn-red"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="alert alert-success" id="login-alert">
+            <i class="bi bi-check-lg"></i> Identification réussie ! Bienvenue {{ user_name }}.
+        </div>
+
+        <div class="alert alert-dark">
+            Les QCM présentés ne constituent en aucun cas un inventaire exhaustif des notions à connaître pour les
+            examens. De même, cette application ne remplace en rien les examens blancs, les annales, etc.
+        </div>
+
+        <div class="grid">
+            {% for ue_id, ue in ues.items() %}
+            <a href="/ue/{{ ue_id }}" class="ue-card">
+                <div class="ue-card-header">
+                    <h3>PASS</h3>
+                    <p>{{ ue.name }}</p>
+                </div>
+                <ul class="ue-card-stats">
+                    {% set ns = namespace(points=0, total=0, done=0, chapters_done=0) %}
+                    {% for ch in ue.chapters %}
+                    {% set ch_key = (ue_id ~ '_' ~ ch.id)|lower %}
+                    {% if user_history.get(ch_key) %}
+                    {% set ns.points = ns.points + user_history[ch_key]['correct'] %}
+                    {% set ns.total = ns.total + user_history[ch_key]['total'] %}
+                    {% set ns.done = ns.done + user_history[ch_key]['total'] %}
+                    {% set ns.chapters_done = ns.chapters_done + 1 %}
+                    {% endif %}
+                    {% endfor %}
+                    <li><span>Moyenne</span> <span>{% if ns.total > 0 %}{{ ((ns.points / ns.total) * 20)|round(2) }}/20{% else %}indéterminée{% endif %}</span></li>
+                    <li><span>Score</span> <span>{% if ns.total > 0 %}{{ ns.points|round(1) }}/{{ ns.total }} pts{% else %}indéterminée{% endif %}</span></li>
+                    <li><span>Questions effectuées</span> <span>{{ ns.done }} / {{ ue.chapters|sum(attribute='question_count') }}</span></li>
+                </ul>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        // Masquer le message de succès après 5 secondes
+        setTimeout(() => {
+            const alert = document.getElementById('login-alert');
+            if (alert) {
+                alert.style.transition = 'opacity 0.5s ease';
+                alert.style.opacity = '0';
+                setTimeout(() => {
+                    alert.style.display = 'none';
+                }, 500);
+            }
+        }, 5000);
+    </script>
+</body>
+
+</html>

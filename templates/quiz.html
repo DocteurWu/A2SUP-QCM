@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2SUP QCM - Quiz</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #A60021;
+            --primary-blue: #337ab7;
+            --bg-color: #f8f9fa;
+            --text-color: #333333;
+            --border-color: #dddddd;
+            --success:#22c55e;
+            --danger:#ef4444;
+            --warning:#f59e0b;
+        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:'Open Sans',sans-serif;background-color:var(--bg-color);color:var(--text-color);min-height:100vh}
+
+        /* Navigation */
+        nav { 
+            background: #ffffff; 
+            border-bottom: 2px solid #e0e0e0; 
+            padding: 0.5rem 1rem; 
+            display: flex; 
+            align-items: center; 
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position:sticky; top:0; z-index:100;
+        }
+        .nav-left { display: flex; align-items: center; gap: 1rem; }
+        .logo-box img {
+            max-height: 40px;
+            object-fit: contain;
+            text-decoration: none;
+        }
+        
+        .nav-back {
+            color: #555;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .nav-back:hover { color: var(--primary-red); }
+
+        .nav-right { display: flex; gap: 0.5rem; align-items: center; }
+        .btn-nav {
+            padding: 0.4rem 0.8rem;
+            border-radius: 4px;
+            color: white;
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            border: none;
+            cursor: pointer;
+        }
+        .btn-red { background-color: var(--primary-red); }
+        .btn-blue { background-color: var(--primary-blue); }
+
+        .container { max-width:800px; margin:2rem auto; padding:0 1rem; }
+
+        /* Progress bar */
+        .progress-bar-container{margin-bottom:1.5rem}
+        .progress-info{display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem}
+        .progress-info span{font-size:0.9rem;color:#666;font-weight:600;}
+        .progress-info .current{font-weight:700;color:var(--primary-red);font-size:1.1rem}
+        .progress-track{height:8px;background:#e0e0e0;border-radius:4px;overflow:hidden}
+        .progress-fill{height:100%;background-color:var(--primary-red);border-radius:4px;transition:width 0.4s ease}
+
+        /* Stats bar */
+        .stats-bar{display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap}
+        .stat-chip{background:white;border:1px solid var(--border-color);border-radius:4px;padding:0.6rem 1rem;display:flex;align-items:center;gap:0.5rem;font-size:0.9rem;box-shadow:0 1px 2px rgba(0,0,0,0.05)}
+        .stat-chip .num{font-weight:700}
+        .stat-chip.correct .num{color:var(--success)}
+        .stat-chip.wrong .num{color:var(--danger)}
+        .stat-chip.total .num{color:#555}
+
+        /* Question card */
+        .question-card{
+            background:white;
+            border:1px solid var(--border-color);border-radius:4px;
+            padding:2rem;box-shadow:0 2px 4px rgba(0,0,0,0.05);
+            animation:fadeInUp 0.4s ease
+        }
+        @keyframes fadeInUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+        .question-number{font-size:0.85rem;color:var(--primary-red);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.8rem}
+        .question-statement{font-size:1.15rem;font-weight:600;line-height:1.5;margin-bottom:1.8rem;color:#222;}
+
+        /* Answer items */
+        .items-list{display:flex;flex-direction:column;gap:0.8rem}
+        .item-row{
+            display:flex;align-items:flex-start;gap:0.8rem;
+            padding:1rem 1.2rem;border-radius:4px;
+            border:1px solid var(--border-color);cursor:pointer;
+            transition:all 0.2s;background:#ffffff
+        }
+        .item-row:hover{border-color:var(--primary-red);background:#fcfcfc}
+        .item-row.selected{border-color:var(--primary-red);background:#fff5f6;}
+        .item-row.correct{border-color:var(--success);background:#f0fdf4;}
+        .item-row.incorrect{border-color:var(--danger);background:#fef2f2;}
+        .item-row.wrong-selected{border-color:var(--danger);background:#fef2f2;}
+        .item-row.missed{border-color:var(--warning);background:#fffbeb;}
+
+        .item-content{flex:1;display:flex;flex-direction:column;gap:0.2rem}
+        .item-main{display:flex;align-items:flex-start;gap:0.5rem;flex:1}
+        .item-text{flex:1;font-size:0.95rem;line-height:1.5;padding-top:0.2rem;color:#333}
+        .item-badge{
+            display:inline-block;font-size:0.75rem;font-weight:700;padding:0.15rem 0.5rem;
+            border-radius:3px;margin-left:0.5rem;flex-shrink:0;vertical-align:middle;
+        }
+        .item-badge.vrai{background:#dcfce7;color:#16a34a}
+        .item-badge.faux{background:#fee2e2;color:#dc2626}
+
+        .item-correction{
+            font-size:0.9rem;line-height:1.45;color:#555;
+            margin-left:2.5rem;margin-top:0.4rem;
+            padding:0.6rem 0.8rem;background:#fefce8;border-left:3px solid var(--warning);
+            border-radius:0 3px 3px 0;display:none;
+        }
+        .item-correction.show{display:block}
+        .item-correction:empty{display:none}
+
+        .item-letter{
+            min-width:32px;height:32px;border-radius:4px;
+            display:flex;align-items:center;justify-content:center;
+            font-weight:700;font-size:0.9rem;
+            background:#f0f0f0;color:#555;
+            transition:all 0.2s;flex-shrink:0
+        }
+        .item-row.selected .item-letter{background:var(--primary-red);color:white}
+        .item-row.correct .item-letter{background:var(--success);color:white}
+        .item-row.incorrect .item-letter,.item-row.wrong-selected .item-letter{background:var(--danger);color:white}
+        .item-row.missed .item-letter{background:var(--warning);color:white}
+
+        .item-text{flex:1;font-size:0.95rem;line-height:1.5;padding-top:0.2rem;color:#333}
+
+        .item-icon{font-size:1.1rem;opacity:0;transition:all 0.3s;flex-shrink:0}
+        .item-row.correct .item-icon{opacity:1;color:var(--success)}
+        .item-row.incorrect .item-icon,.item-row.wrong-selected .item-icon{opacity:1;color:var(--danger)}
+        .item-row.missed .item-icon{opacity:1;color:var(--warning)}
+
+        /* Corrections */
+        .corrections-box{
+            background:#f8f9fa;border:1px solid var(--border-color);
+            border-radius:4px;padding:1.2rem;margin-top:1.2rem;
+            display:none;animation:fadeInUp 0.3s ease
+        }
+        .corrections-box.show{display:block}
+        .corrections-title{font-size:0.9rem;color:var(--primary-red);font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.8rem}
+        .correction-item{font-size:0.95rem;line-height:1.5;margin-bottom:0.6rem;padding-left:1.5rem;position:relative}
+        .correction-item .letter{position:absolute;left:0;font-weight:700;color:var(--primary-red)}
+        .correction-item .text{color:#444}
+
+        /* Buttons */
+        .actions{display:flex;gap:0.8rem;margin-top:1.5rem;flex-wrap:wrap}
+        .btn{
+            padding:0.8rem 1.5rem;border-radius:4px;border:none;
+            font-family:'Open Sans',sans-serif;font-weight:600;font-size:1rem;
+            cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:0.5rem;justify-content:center;
+        }
+        .btn-validate{background-color:var(--primary-red);color:white;flex:1}
+        .btn-validate:hover{background-color:#8C2230;}
+        .btn-validate:disabled{opacity:0.6;cursor:not-allowed;}
+        .btn-next{background-color:var(--success);color:white;flex:1}
+        .btn-next:hover{background-color:#16a34a;}
+        .btn-back{background-color:#e0e0e0;color:#333;border:1px solid #ccc}
+        .btn-back:hover{background-color:#d0d0d0;}
+
+        /* Result summary */
+        .result-card{
+            background:white;
+            border:1px solid var(--border-color);border-radius:4px;
+            padding:3rem;text-align:center;animation:fadeInUp 0.4s ease;box-shadow:0 2px 4px rgba(0,0,0,0.05)
+        }
+        .result-card .emoji{font-size:4rem;margin-bottom:1rem}
+        .result-card h2{font-size:1.8rem;font-weight:700;margin-bottom:0.5rem;color:#222}
+        .result-card .score{font-size:3.5rem;font-weight:800;margin:1rem 0}
+        .result-card .score.good{color:var(--success)}
+        .result-card .score.ok{color:var(--warning)}
+        .result-card .score.bad{color:var(--danger)}
+        .result-card .details{color:#666;font-size:1.1rem}
+        .result-actions{display:flex;gap:1rem;margin-top:2rem;justify-content:center}
+
+        /* Loading */
+        .loading{text-align:center;padding:4rem;color:#666}
+        .loading i{font-size:2rem;animation:spin 1s linear infinite;display:inline-block;color:var(--primary-red)}
+        @keyframes spin{to{transform:rotate(360deg)}}
+
+        .hidden{display:none}
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-left">
+            <a href="/dashboard" class="logo-box">
+                <img src="/logo.jpg" alt="A2SUP">
+            </a>
+            <a href="/ue/{{ ue_id }}" class="nav-back"><i class="bi bi-arrow-left"></i> Retour aux chapitres</a>
+        </div>
+        <div class="nav-right">
+            <a href="https://www.a2sup.fr/" class="btn-nav btn-blue"><i class="bi bi-house-door-fill"></i> a2sup.fr</a>
+            <a href="/logout" class="btn-nav btn-red" style="font-size:0.85rem;padding:0.3rem 0.6rem;"><i class="bi bi-box-arrow-right"></i> Déconnexion</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Écran de chargement pendant le téléchargement des questions -->
+        <div id="loading" class="loading">
+            <i class="bi bi-arrow-repeat"></i>
+            <p style="margin-top:1rem">Chargement des questions...</p>
+        </div>
+
+        <!-- Interface du quiz : question, items, boutons -->
+        <div id="quiz-view" class="hidden">
+            <div class="progress-bar-container">
+                <div class="progress-info">
+                    <span class="current" id="progress-text">1 / ?</span>
+                    <span id="chapter-name">{{ chapter.name }}</span>
+                </div>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+                </div>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-chip correct"><i class="bi bi-check-circle"></i> <span class="num" id="stat-correct">0</span></div>
+                <div class="stat-chip wrong"><i class="bi bi-x-circle"></i> <span class="num" id="stat-wrong">0</span></div>
+                <div class="stat-chip total"><i class="bi bi-circle"></i> <span class="num" id="stat-total">0</span></div>
+            </div>
+
+            <div class="question-card" id="question-card">
+                <div class="question-number" id="q-number">Question 1</div>
+                <div class="question-statement" id="q-statement"></div>
+                <div class="items-list" id="items-list"></div>
+                <div class="corrections-box" id="corrections-box">
+                    <div class="corrections-title"><i class="bi bi-lightbulb"></i> Corrections</div>
+                    <div id="corrections-content"></div>
+                </div>
+            </div>
+
+            <div class="actions" id="actions">
+                <button class="btn btn-validate" id="btn-validate" onclick="validateAnswer()">
+                    <i class="bi bi-check2-all"></i> Valider
+                </button>
+            </div>
+        </div>
+
+        <!-- Récapitulatif de fin de quiz -->
+        <div id="result-view" class="hidden">
+            <div class="result-card" id="result-card"></div>
+        </div>
+    </div>
+
+    <script>
+    /* ── Variables du quiz ── */
+    const LETTERS = ['A','B','C','D','E','F','G','H'];
+    let questions = [];
+    let currentIndex = 0;
+    let selectedItems = new Set();
+    let answered = false;
+    let stats = { correct: 0, wrong: 0, points: 0 };
+
+    /* ── Calcule le score selon le barème PASS ── */
+    function calcScore(isCorrectAnswers, userSelected) {
+        let diff = 0;
+        for (let i = 0; i < isCorrectAnswers.length; i++) {
+            if (isCorrectAnswers[i] !== userSelected.has(i)) diff++;
+        }
+        if (diff === 0) return 1;
+        if (diff === 1) return 0.7;
+        if (diff === 2) return 0.1;
+        return 0;
+    }
+
+    /* ── Chargement des questions depuis l'API ── */
+    (async () => {
+        const params = new URLSearchParams(window.location.search);
+        const mode = params.get('mode') || 'all';
+        const count = params.get('count') || 0;
+        let url = `/api/questions/{{ ue_id }}/{{ chapter.id }}?mode=${mode}`;
+        if (count > 0) url += `&count=${count}`;
+
+        try {
+            const resp = await fetch(url);
+            questions = await resp.json();
+            if (questions.length === 0) {
+                document.getElementById('loading').innerHTML = '<p>Aucune question trouvée</p>';
+                return;
+            }
+            document.getElementById('loading').classList.add('hidden');
+            document.getElementById('quiz-view').classList.remove('hidden');
+            showQuestion(0);
+        } catch(e) {
+            document.getElementById('loading').innerHTML = '<p>Erreur de chargement</p>';
+        }
+    })();
+
+    /* ── Affiche une question à l'écran ── */
+    function showQuestion(index) {
+        const q = questions[index];
+        selectedItems = new Set();
+        answered = false;
+
+        document.getElementById('q-number').textContent = `Question ${index + 1}`;
+        document.getElementById('q-statement').textContent = q.statement;
+        document.getElementById('progress-text').textContent = `${index + 1} / ${questions.length}`;
+        document.getElementById('progress-fill').style.width = `${((index) / questions.length) * 100}%`;
+        document.getElementById('stat-total').textContent = questions.length;
+
+        // Build items
+        const list = document.getElementById('items-list');
+        list.innerHTML = '';
+        q.items.forEach((item, i) => {
+            const row = document.createElement('div');
+            row.className = 'item-row';
+            row.dataset.index = i;
+            row.innerHTML = `
+                <div class="item-letter">${LETTERS[i]}</div>
+                <div class="item-content">
+                    <div class="item-main">
+                        <div class="item-text">${item}</div>
+                        <div class="item-badge" data-badge style="display:none"></div>
+                    </div>
+                    <div class="item-correction" data-correction></div>
+                </div>
+                <div class="item-icon"><i class="bi bi-check-lg"></i></div>
+            `;
+            row.addEventListener('click', () => toggleItem(i));
+            list.appendChild(row);
+        });
+
+        // Reset corrections
+        document.getElementById('corrections-box').classList.remove('show');
+        document.getElementById('corrections-box').style.display = 'none';
+
+        // Reset actions
+        const actions = document.getElementById('actions');
+        actions.innerHTML = `
+            <button class="btn btn-validate" id="btn-validate" onclick="validateAnswer()">
+                <i class="bi bi-check2-all"></i> Valider
+            </button>
+        `;
+        document.getElementById('btn-validate').disabled = false;
+
+        // Animate
+        const card = document.getElementById('question-card');
+        card.style.animation = 'none';
+        card.offsetHeight;
+        card.style.animation = 'fadeInUp 0.4s ease';
+    }
+
+    /* ── Bascule un item coché/décoché ── */
+    function toggleItem(index) {
+        if (answered) return;
+        const row = document.querySelector(`.item-row[data-index="${index}"]`);
+        if (selectedItems.has(index)) {
+            selectedItems.delete(index);
+            row.classList.remove('selected');
+        } else {
+            selectedItems.add(index);
+            row.classList.add('selected');
+        }
+    }
+
+    /* ── Valide la réponse et affiche la correction ── */
+    function validateAnswer() {
+        if (answered || selectedItems.size === 0) return;
+        answered = true;
+
+        const q = questions[currentIndex];
+        const answerStr = q.answer_str;
+        const isCorrectAnswers = answerStr.split('').map(c => c.toUpperCase() === 'V');
+
+        const rows = document.querySelectorAll('.item-row');
+        let allCorrect = true;
+
+        rows.forEach((row, i) => {
+            const isSelected = selectedItems.has(i);
+            const shouldBeSelected = isCorrectAnswers[i];
+            const letterIcon = row.querySelector('.item-icon i');
+            const badge = row.querySelector('[data-badge]');
+            const correctionEl = row.querySelector('[data-correction]');
+            const correction = q.corrections[i];
+
+            // Afficher badge Vrai/Faux
+            badge.style.display = 'inline-block';
+            if (shouldBeSelected) {
+                badge.textContent = 'VRAI';
+                badge.className = 'item-badge vrai';
+            } else {
+                badge.textContent = 'FAUX';
+                badge.className = 'item-badge faux';
+            }
+
+            // Afficher la correction sous l'item
+            if (correction && correction.trim()) {
+                correctionEl.textContent = correction;
+                correctionEl.classList.add('show');
+            }
+
+            if (shouldBeSelected && isSelected) {
+                row.classList.add('correct');
+                row.classList.remove('selected');
+                letterIcon.className = 'bi bi-check-lg';
+            } else if (shouldBeSelected && !isSelected) {
+                row.classList.add('missed');
+                row.classList.remove('selected');
+                letterIcon.className = 'bi bi-exclamation-triangle-fill';
+                allCorrect = false;
+            } else if (!shouldBeSelected && isSelected) {
+                row.classList.add('wrong-selected');
+                row.classList.remove('selected');
+                letterIcon.className = 'bi bi-x-lg';
+                allCorrect = false;
+            } else {
+                row.classList.add('correct');
+                row.classList.remove('selected');
+                letterIcon.className = 'bi bi-check-lg';
+            }
+        });
+
+        // Update stats
+        const score = calcScore(isCorrectAnswers, selectedItems);
+        stats.points += score;
+        if (score >= 1) {
+            stats.correct++;
+            document.getElementById('stat-correct').textContent = stats.correct;
+        } else {
+            stats.wrong++;
+            document.getElementById('stat-wrong').textContent = stats.wrong;
+        }
+
+        // Hide the separate corrections box since corrections are now inline
+        document.getElementById('corrections-box').style.display = 'none';
+
+        // Sauvegarde progressive
+        fetch('/api/history', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                ue_id: '{{ ue_id }}',
+                chapter_id: {{ chapter.id }},
+                mode: new URLSearchParams(window.location.search).get('mode') || 'all',
+                correct: stats.points,
+                total: currentIndex + 1,
+                progressive: true
+            })
+        }).catch(() => {});
+
+        // Update actions
+        const actions = document.getElementById('actions');
+        if (currentIndex < questions.length - 1) {
+            actions.innerHTML = `
+                <button class="btn btn-next" onclick="nextQuestion()">
+                    Question suivante <i class="bi bi-arrow-right"></i>
+                </button>
+            `;
+        } else {
+            actions.innerHTML = `
+                <button class="btn btn-next" onclick="showResults()">
+                    Voir les résultats <i class="bi bi-trophy"></i>
+                </button>
+            `;
+        }
+    }
+
+    /* ── Passe à la question suivante ── */
+    function nextQuestion() {
+        currentIndex++;
+        showQuestion(currentIndex);
+    }
+
+    /* ── Affiche l'écran de fin avec le récapitulatif ── */
+    function showResults() {
+        document.getElementById('quiz-view').classList.add('hidden');
+        const resultView = document.getElementById('result-view');
+        resultView.classList.remove('hidden');
+
+        const total = questions.length;
+        const correct = stats.correct;
+        const points = stats.points;
+        const maxPoints = total;
+        const score20 = maxPoints > 0 ? ((points / maxPoints) * 20).toFixed(2) : 0;
+
+        let emoji, title, scoreClass;
+        if (score20 >= 16) { emoji = '🎉'; title = 'Excellent !'; scoreClass = 'good'; }
+        else if (score20 >= 10) { emoji = '💪'; title = 'Pas mal !'; scoreClass = 'ok'; }
+        else { emoji = '📖'; title = 'À revoir'; scoreClass = 'bad'; }
+
+        document.getElementById('result-card').innerHTML = `
+            <div class="emoji">${emoji}</div>
+            <h2>${title}</h2>
+            <div class="score ${scoreClass}">${score20}/20</div>
+            <div class="details">${points.toFixed(1)} point${points >= 2 ? 's' : (points === 1 ? '' : 's')} sur ${maxPoints} — ${correct} question${correct>1?'s':''} entièremenent correcte${correct>1?'s':''}</div>
+            <div class="result-actions">
+                <button class="btn btn-back" onclick="window.location.href='/ue/{{ ue_id }}'">
+                    <i class="bi bi-arrow-left"></i> Chapitres
+                </button>
+                <button class="btn btn-validate" onclick="window.location.reload()">
+                    <i class="bi bi-arrow-repeat"></i> Recommencer
+                </button>
+            </div>
+        `;
+
+        /* ── Envoi du score au serveur pour l'historique ── */
+        const params = new URLSearchParams(window.location.search);
+        const historyData = {
+            ue_id: '{{ ue_id }}',
+            chapter_id: {{ chapter.id }},
+            mode: params.get('mode') || 'all',
+            correct: points,
+            total: total
+        };
+        fetch('/api/history', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(historyData)
+        }).then(r => { if (!r.ok) console.error('Erreur sauvegarde:', r.status); })
+          .catch(e => console.error('Erreur réseau sauvegarde:', e));
+    }
+
+    /* ── Raccourcis clavier : A-E/1-5 pour cocher, Entrée pour valider ── */
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !answered && selectedItems.size > 0) {
+            validateAnswer();
+        } else if (e.key === 'Enter' && answered) {
+            if (currentIndex < questions.length - 1) nextQuestion();
+            else showResults();
+        } else if (['1','2','3','4','5','a','b','c','d','e'].includes(e.key.toLowerCase())) {
+            const map = {'a':0,'b':1,'c':2,'d':3,'e':4,'1':0,'2':1,'3':2,'4':3,'5':4};
+            const idx = map[e.key.toLowerCase()];
+            if (idx !== undefined && idx < questions[currentIndex]?.items.length) {
+                toggleItem(idx);
+            }
+        }
+    });
+    </script>
+</body>
+</html>
